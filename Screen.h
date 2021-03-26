@@ -8,6 +8,7 @@ public:
 	Screen(const char* romName, int width, int height, int scale);
 	~Screen();
 	void updateScreen(const uint_least8_t* display);
+	int parseInput(uint_least8_t* controller);
 private:
 	int screenWidth;
 	int screenHeight;
