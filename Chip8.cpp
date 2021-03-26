@@ -232,16 +232,20 @@ bool Chip8::loadRom(const char* fileName)
 {
 	std::ifstream ifs(fileName, std::ios::binary | std::ios::ate);
 
-	if (!ifs) 
+	if (!ifs)
+	{
+		std::cout << "File not found" << '\n'
+				  << "Exiting...";
 		return false;
+	}
 
-	std::streampos ifSize = 0;
-	ifSize = ifs.tellg();
 	ifs.seekg(0, std::ios::end);
-
-	if (ifs.tellg() - ifSize > 0x800)
+	if (ifs.tellg() > 0x800)
+	{
+		std::cout << "File size exceeds memory capacity of Chip-8" << '\n'
+				  << "Exiting...";
 		return false;
-
+	}
 	std::streampos pos = ifs.tellg();
 	ifs.seekg(0, std::ios::beg);
 	ifs.read(reinterpret_cast<char*>(&mem[0x200]), pos);
