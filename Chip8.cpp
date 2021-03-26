@@ -38,93 +38,93 @@ void Chip8::executeOpcode()
 		case 0x0000:
 			switch (opcode & 0x0FFF)
 			{
-				case 0x00E0: // Clear screen
+				case 0x00E0: // CLS
 					for (int i = 0; i < 2046; i++) screen[i] = 0;
 					break;
-				case 0xEE: // Return
+				case 0xEE: // RET
 					pc = SP->top();
 					SP->pop();
 					break;
 			}
 			break; // 0x0XXX instruction switch block
-		case 0x1000:
+		case 0x1000: // SYS addr
 			pc = opcode & 0x0FFF;
 			break;
-		case 0x2000:
+		case 0x2000: // CALL addr
 			SP->push(pc);
 			pc = opcode & 0x0FFF;
 			break;
-		case 0x3000:
+		case 0x3000: // SE Vx, byte
 			if (V[x] == (opcode & 0x00FF)) pc += 2;
 			break;
-		case 0x4000:
+		case 0x4000: // SNE Vx, byte
 			if (V[x] != (opcode & 0x00FF)) pc += 2;
 			break;
-		case 0x5000:
+		case 0x5000: // SE Vx, Vy
 			if (V[x] == V[y]) pc += 2;
 			break;
-		case 0x6000:
+		case 0x6000: // LD Vx, byte
 			V[x] = opcode & 0x00FF;
 			break;
-		case 0x7000:
+		case 0x7000: // ADD Vx, byte
 			V[x] += opcode & 0x00FF;
 			break;
 		case 0x8000:
 			switch (opcode & 0x000F) // 0x8XXX instruction switch block
 			{
 
-				case 0x0000:
+				case 0x0000: // LD Vx, Vy
 					V[x] = V[y];
 					break;
-				case 0x0001:
+				case 0x0001: // OR Vx, Vy
 					V[x] |= V[y];
 					break;
-				case 0x0002:
+				case 0x0002: // AND Vx, Vy
 					V[x] &= V[y];
 					break;
-				case 0x0003:
+				case 0x0003: // XOR Vx, Vy
 					V[x] ^= V[y];
 					break;
-				case 0x0004:
+				case 0x0004: // ADD Vx, Vy
 					V[x] += V[y];
 					if (V[x] < V[y]) V[0xF] = 1;
 					else V[0xF] = 0;
 					break;
-				case 0x0005:
+				case 0x0005: // SUB Vx, Vy
 					V[x] -= V[y];
 					if (V[x] > V[y]) V[0xF] = 0;
 					else V[0xF] = 1;
 					break;
-				case 0x0006:
+				case 0x0006: // SHR Vx {, Vy}
 					if ((V[x] % 2) == 1) V[0xF] = 1;
 					else V[0xF] = 0;
 					V[x] /= 2;
 					break;
-				case 0x0007:
+				case 0x0007: // SUBN Vx, Vy
 					V[x] = V[y] - V[x];
 					if (V[y] > V[x]) V[0xF] = 1;
 					else V[0xF] = 0;
 					break;
-				case 0x000E: 
+				case 0x000E: // SHL Vx {, Vy}
 					if (V[x] >= 0x80) V[0xF] = 1;
 					else V[0xF] = 0;
 					V[x] *= 2;
 					break;
 			}
 			break; // 0x8XXX instruction switch block
-		case 0x9000:
+		case 0x9000: // SNE Vx, Vy
 			if (V[x] != V[y]) pc += 2;
 			break;
-		case 0xA000:
+		case 0xA000: // LD I, addr
 			iReg = opcode & 0x0FFF;
 			break;
-		case 0xB000:
+		case 0xB000: // JP V0, addr
 			pc = (opcode & 0x0FFF) + V[0];
 			break;
-		case 0xC000:
+		case 0xC000: // RND Vx, byte
 			V[x] = (rand() % 256) & (opcode & 0x00FF);
 			break;
-		case 0xD000:
+		case 0xD000: // DRW Vx, Vy, nibble
 		{
 			u8 xCoord = V[x];
 			u8 yCoord = V[y];
@@ -151,21 +151,21 @@ void Chip8::executeOpcode()
 		case 0xE000:
 			switch (opcode & 0x00FF)
 			{
-				case 0x09E:
+				case 0x09E: // SKP Vx
 					if (keys[V[x]] == 1) pc += 2;
 					break;
-				case 0x00A1:
+				case 0x00A1: // SKNP Vx
 					if (keys[V[x]] != 1) pc += 2;
 					break;
 			}
-			break; // 0xE000 instruction switch block
+			break;
 		case 0xF000:
 			switch (opcode & 0x00FF) // 0xF000 instruction switch block
 			{
-				case 0x0007:
+				case 0x0007: // LD Vx, DT
 					V[x] = delayTimer;
 					break;
-				case 0x000A: // Wait for key press
+				case 0x000A: // LD Vx, K
 				{
 					bool press = false;
 					for (int i = 0; i < 16; i++)
@@ -175,31 +175,31 @@ void Chip8::executeOpcode()
 					if (!press) pc -= 2;
 				}
 				break;
-				case 0x0015:
+				case 0x0015: // LD DT, Vx
 					delayTimer = V[x];
 					break;
-				case 0x0018:
+				case 0x0018: // LD ST, Vx
 					soundTimer = V[x];
 					break;
-				case 0x001E:
+				case 0x001E: // ADD I, Vx
 					iReg += V[x];
 					break;
-				case 0x0029:
+				case 0x0029: // LD F, Vx
 					iReg = V[x] * 0x5;
 					break;
-				case 0x0033:
+				case 0x0033: // LD B, Vx
 					// BCD at iReg
 					mem[iReg] = V[x] / 100;
 					mem[iReg + 1] = (V[x] / 10) % 10;
 					mem[iReg + 2] = V[x] % 10;
 					break;
-				case 0x0055:
+				case 0x0055: // LD [I], Vx
 					for (int i = 0; i <= x; i++)
 					{
 						mem[iReg + i] = V[i];
 					}
 					break;
-				case 0x0065:
+				case 0x0065: // LD Vx, [I]
 					for (int i = 0; i <= x; i++)
 					{
 						V[i] = mem[iReg + i];
@@ -215,6 +215,7 @@ void Chip8::updateTimers()
 	if (delayTimer > 0) delayTimer--;
 	if (soundTimer > 0) soundTimer--;
 }
+
 void Chip8::reset()
 {
 	pc = 0x200;

@@ -50,14 +50,5 @@ private:
 	void executeOpcode();
 	void updateTimers();
 
-	// Extract x or y from opcode
-	u8 getRegister(u16 opcode, int xy)
-	{
-		if (xy == 0)
-			return (opcode >> 8) & 0x000F;
-		else
-			return (opcode >> 4) & 0x000F;
-	}
-
 };
 
