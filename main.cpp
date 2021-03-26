@@ -1,9 +1,6 @@
 #define SDL_MAIN_HANDLED
-#include <iostream>
-#include <string>
 #include <thread>
 #include <chrono>
-#include <SDL.h>
 #include "Chip8.h"
 #include "Screen.h"
 
@@ -14,11 +11,11 @@ int main(int argc, char* argv[])
 	if (!myChip8.loadRom(argv[1])) return 1;
 
 	int status = 0;
-
 	while(status != -1)
 	{
 		status = chip8Display.parseInput(myChip8.keys);
 
+		if (status == 1) myChip8.reset();
 		if (status == 2) myChip8.paused = !myChip8.paused;
 		if (myChip8.paused) continue;
 
@@ -28,7 +25,6 @@ int main(int argc, char* argv[])
 			chip8Display.updateScreen(myChip8.screen);
 			myChip8.drawFlag = false;
 		}
-
 		std::this_thread::sleep_for(std::chrono::milliseconds(17));
 	}
 
