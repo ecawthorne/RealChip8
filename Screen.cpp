@@ -6,7 +6,9 @@ Screen::Screen(const char* romName, int width, int height, int scale)
 	screenWidth = width;
 	screenHeight = height;
 	screenScale = scale;
+
 	SDL_Init(SDL_INIT_VIDEO);
+
 	window = SDL_CreateWindow(
 		romName,
 		SDL_WINDOWPOS_UNDEFINED,
@@ -14,6 +16,7 @@ Screen::Screen(const char* romName, int width, int height, int scale)
 		width * scale,
 		height * scale,
 		SDL_WINDOW_OPENGL);
+
 	renderer = SDL_CreateRenderer(
 		window,
 		-1,

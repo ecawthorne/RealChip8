@@ -16,8 +16,8 @@ public:
 	bool drawFlag;
 	bool paused;
 	void emulateCycles(int cycles);
-	bool loadRom(const char* fileName);
 	void reset();
+	bool loadRom(const char* fileName);
 
 private:
 	u16 pc;
