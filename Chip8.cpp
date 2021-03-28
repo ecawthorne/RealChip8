@@ -39,7 +39,7 @@ void Chip8::executeOpcode()
 			switch (opcode & 0x0FFF)
 			{
 				case 0x00E0: // CLS
-					for (int i = 0; i < 2046; i++) screen[i] = 0;
+					for (int i = 0; i < 2048; i++) screen[i] = 0;
 					break;
 				case 0xEE: // RET
 					pc = SP->top();
